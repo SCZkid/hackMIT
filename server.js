@@ -2,9 +2,6 @@
 var http = require('http');
 var url = require('url');
 
-// AlchemyAPI
-var alchemyapi = require('./alchemyapi');
-
 // Express
 var express = require('express');
 var app = express();
@@ -82,24 +79,5 @@ function start(route) {
 	console.log('Server has started.');
 }
 
-app.get('/example', example);
-
 exports.start = start;
-
-// Replace this with the files we read!
-var demo_text = 'My physics professor says that Newton discovered F=m*a, where m is mass and a is acceleration. F is force, measured in Newtons, an SI unit.';
-
-// What is this?
-function example(req, res) {
-  var output = {};
-
-  // Start the analysis chain
-  concepts(req, res, output);
-}
-
-function concepts(req, res, output) {
-  alchemyapi.concepts('text', demo_text, { 'showSourceText':1 }, function(error, response) {
-    output['concepts'] = { text:demo_text, response:JSON.stringify(response,null,4), results:response['concepts'] };
-    res.send(output);
-  });
-}
+exports.app = app;
