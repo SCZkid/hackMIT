@@ -12,7 +12,7 @@ function start(route) {
         response.sendfile('Public/testPage.html')
 		//response.end();
 	});
-	app.listen(82);
+	app.listen(9001);
 	console.log("Server has started.");
 }
 
