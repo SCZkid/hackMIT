@@ -41,6 +41,13 @@ function start(route) {
         response.sendfile('Public/testPage.html')
 		//response.end();
 	});
+	app.get('/parse', function(request, response) {
+		var pathname = url.parse(request.url).pathname;
+		console.log("Request for " + pathname + " received.");
+        route(pathname);
+        response.sendfile('Public/MarkdownParse.html')
+		//response.end();
+	});
 	app.listen(9001);
 	console.log("Server has started.");
 }
