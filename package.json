@@ -5,6 +5,7 @@
 	"dependencies": {
 	    "express":     "3.x",
 	    "mongodb":     "*",
-	    "mongoose":    "*"
+	    "mongoose":    "*",
+      "request":    "~2.27.0"
 	} 
 }
