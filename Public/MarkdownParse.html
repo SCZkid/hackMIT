@@ -1,0 +1,57 @@
+<!DOCTYPE html> 
+<html>
+    <head>
+    	<title>Parse Markdown</title>
+        <script src="/Resources/jquery-1.10.2.min.js"></script>
+        <script src="/JS/parse.js"></script>
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/CSS/parse.css">
+        <!-- Optional theme -->
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    </head>
+
+    <body>
+
+    	<div class="row parsePage">
+    		<div class="modal fade" id="notecardsModal" tabindex="-1" role="dialog">
+		    <div class="modal-dialog">
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		          <h4 class="modal-title">New Notecards!</h4>
+		        </div>
+		        <div class="modal-body">
+		          <div id="notecard_container">
+
+		          	<div class="Clear"></div>
+		          </div>
+
+		        </div>
+		        <div class="modal-footer">
+		        	<button class="btn btn-primary" id="btn_save">Save my notes</button>
+		        	<button class="btn btn-default" data-toggle="modal" data-target="#notecardsModal">Return to editor</button>
+		        </div>
+		      </div><!-- /.modal-content -->
+		    </div><!-- /.modal-dialog -->
+		  </div><!-- /.modal -->
+
+
+
+    		<div class="container">
+    			<div class="jumbotron">
+	        		<h1 class="title">Make your notes useful</h1>
+	        		<h2>Organize your notes by concept, not lecture.</h2>
+	        		<h3>Upload or paste your markdown notes to get started</h3>
+						<button class="btn btn-primary" id="btn_dropbox">Configure Dropbox Folder</button>
+						<button class="btn btn-success" id="btn_upload">Upload Any File</button>
+				</div>
+		        <textarea id="markdown_input"></textarea>
+		        <button id="btn_parse" class="btn btn-primary">Parse Markdown</button>
+	    	</div>
+   	 	</div>
+    </body>
+    
+</html>
