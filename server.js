@@ -2,17 +2,34 @@ var http = require("http");
 var url = require("url");
 var express = require("express");
 var app = express();
-/*var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test');
+var mongoose = require('mongoose');
+mongoose.connect('mongodb:hack:hack,hack.kalosal.com/wheee');
 var db = mongoose.connection;
 db.once('open', function callback () {
     console.log("hooray!");
-    db.createCollection("hackers", {});
-    db.hackers.insert({firstName: "Jordan", lastName: "Haines", gender: "m", age: 20});
-    db.hackers.insert({firstName: "Collin", lastName: "Stedman", gender: "m", age: 20});
-    db.hackers.insert({firstName: "Steven", lastName: "Zierk", gender: "m", age: 20});
-    console.log(db.hackers.find());
-}); */
+    var jfaoiwejfoiawe = mongoose.model('jfaoiwejfoiawe', { firstName: String });
+    var jordan = new jfaoiwejfoiawe({
+    	firstName: "Collin"
+    });
+    jordan.save(function(error, data) {
+        if(error) {
+        	console.log(error);
+        } else {
+        	console.log("WEHFIOWHEF");
+        	console.log(data);
+        }
+    });
+    jfaoiwejfoiawe.find(function(err, people) {
+    	if(err) {
+    		console.log(error);
+    	} else {
+    		console.log("JWEIOJFWEJFOIWEF");
+    		console.log(people);
+    	}
+    })
+    //var Jordan = new Person({ firstName: 'Jordan', lastName: 'Haines', age: 20});
+});
+
 
 
 function start(route) {
