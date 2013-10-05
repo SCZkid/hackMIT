@@ -1,0 +1,7 @@
+{
+	"name": "NoteParse",
+	"description": "Note parsing service",
+	"dependencies": {
+	    "express": "3.x"
+	} 
+}
