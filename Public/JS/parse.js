@@ -1,6 +1,11 @@
 $(document).ready(function() {
+	var dbox = dbox_utility();
 	$("#btn_parse").click(function() {
 		createNotecards($("#markdown_input").val());
+	});
+
+	$("#btn_dropbox").click(function() {
+		//dbox.init();
 	});
 });
 

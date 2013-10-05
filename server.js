@@ -26,6 +26,20 @@ function start(route) {
 	});
 	app.get('/parse', function(request, response) {
 		var pathname = url.parse(request.url).pathname;
+
+		var dbox;
+		var app;
+		var key = "8higzkomex2c5jy";
+		var secret = "rueapgelizhsyb1";
+		dbox = require("dbox");
+		app = dbox.app( {"app_key" : key, "app_secret" : secret} );
+
+		app.requesttoken(function(status, request_token) {
+			//console.log(request_token);
+			console.log("Must visit: https://www.dropbox.com/1/oauth/authorize?oauth_token=#"+request_token.oauth_token);
+		});
+
+
 		console.log("Request for " + pathname + " received.");
         route(pathname);
         response.sendfile('Public/MarkdownParse.html')
