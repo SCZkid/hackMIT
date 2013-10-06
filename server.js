@@ -210,7 +210,7 @@ function start(route) {
               var contents = getFile(reply[i].substring(1), req.session);
               if (contents)
               {
-                revision(contents);
+                revision(contents, reply[i].substring(1));
               }
             }
           };
@@ -230,52 +230,59 @@ function start(route) {
     );
 
     app.post('/addDoc', function(request, response) {
-      response.send('yay ' + request.body.notes);
-      db.collections['users'].update({ _id: request.session.passport.user }, {documents: [{ name: "yay", text: request.body.notes}]}, function(err) {
-            console.log(err);
+    console.log(request.session.passport.user);
+    var newDoc = new Doc({ 
+      output: 
+      title: "testTitle",
+    });
+    newDoc.save(function(error, data) {
+      if(error) {
+        console.log(error);
+      } else {
+        console.log(data);
+      }
+    });
+    response.send(request.body.notes);
+  });
+
+  app.post('/addUser', function(request, response) {
+      console.log(request.body);
+      var newUser = new User({
+        username: request.body.username,
+        password: request.body.password,
+        documents: [],
+        dropboxToken: ''
       });
-      console.log("-------------------------------------------------------------------------------");
-      console.log(request.session.passport.user);
-      console.log("_------------------------------------------------------------------------------")
-      User.findOne({ _id: request.session.passport.user }, function(err, data) {
-        if(err) {
-          console.log(err);
+      newUser.save(function(error, data) {
+        if(error) {
+          console.log(error);
         } else {
-          console.log("data");
           console.log(data);
         }
       });
+  });
+
+  app.get('/userNotes', function(request, response) {
+    if(request.session.passport.user) {
+      User.findOne({ _id: request.session.passport.user }, function(err, user) {
+        console.log(user);
+        for 
+      })
+    }
+  }
+
+  app.get('/success', function(request, response) {
+    User.findOne({ _id: request.session.passport.user }, function (err, user) {
+        console.log(user);
+        //response.sendfile('Public/testPage.html');
+        var body = '';
+        for(var i = 0; i < user.documents.length; i++)
+          body += '<p>' + JSON.stringify(user.documents[i].text) + '</p>';
+        response.send(body);
+        //var documents = user.documents;
     });
 
-    app.post('/addUser', function(request, response) {
-        console.log(request.body);
-        var newUser = new User({
-          username: request.body.username,
-          password: request.body.password,
-          documents: [],
-          dropboxToken: ''
-        });
-        newUser.save(function(error, data) {
-          if(error) {
-            console.log(error);
-          } else {
-            console.log(data);
-          }
-        })
-    });
-
-    app.get('/success', function(request, response) {
-      User.findOne({ _id: request.session.passport.user }, function (err, user) {
-          console.log(user);
-          //response.sendfile('Public/testPage.html');
-          var body = '';
-          for(var i = 0; i < user.documents.length; i++)
-            body += '<p>' + JSON.stringify(user.documents[i].text) + '</p>';
-          response.send(body);
-          //var documents = user.documents;
-      });
-
-    });
+  });
 
 	app.listen(9001);
 	console.log('Server has started.');
@@ -310,4 +317,19 @@ function getFile(filename, session)
           return "";
         }
       });
+}
+
+function addDoc(title, output)
+{
+  var newDoc = new Doc({ 
+      output: output,
+      title: title
+    });
+    newDoc.save(function(error, data) {
+      if(error) {
+        console.log(error);
+      } else {
+        //console.log(data);
+      }
+    });
 }
