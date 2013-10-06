@@ -55,8 +55,9 @@ db.once('open', function callback () {
     	documents: {}
     });
     var note = new Doc({
+      note_user: String,
       output: "none",
-      title: "zzzzz",
+      title: "zzzzz"
     })
     /*note.save(function(error, data) {
         if(error) {
