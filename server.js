@@ -177,6 +177,27 @@ function start(route) {
         });
     });
 
+    app.post("/dropbox/getFile", function(req, res) {
+      var app = createApp(req.session);
+      var client = app.client(req.session.access_token);
+      var noteName = req.body.note_name;
+      console.log("Hello!");
+      console.log(noteName);
+      client.get(noteName, function(status, reply, meta) {
+        res.send(reply.toString());
+      });
+    });
+
+    app.post("/dropbox/saveFile", function(req, res) {
+      var app = createApp(req.session);
+      var client = app.client(req.session.access_token);
+      var noteName = req.body.note_name;
+      var noteContent = req.body.note_content;
+      client.put(noteName, noteContent, function(status, reply) {
+        res.send(reply);
+      });
+    })
+
     app.get("/dropbox/list", function(req, res) {
         var app = createApp(req.session);
         var client = app.client(req.session.access_token);

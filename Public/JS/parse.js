@@ -51,6 +51,18 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+	$("#btn_save_markdown").click(function() {
+		$.ajax({
+			type: "POST",
+			data: {note_name: $("#list_notes a.active").html(), note_content: $("#markdown_input").val()},
+			url: base_url+"/dropbox/saveFile",
+			success: function(response)
+			{
+				console.log(response);
+			}
+		})
+	});
 });
 
 //Assumes one question or answer per line
@@ -110,14 +122,24 @@ function refreshFiles()
 			$("#list_notes").html("");
 			//console.log(response);
 			for (var i = response.length - 1; i >= 0; i--) {
-				var newLink = "<a href='#' class='list-group-item'>"+response[i]+"</a>";
+				var newLink = "<a href='#' class='list-group-item'>"+response[i].substring(1)+"</a>";
 				$("#list_notes").append(newLink);
 			};
 
 			$("#list_notes a").click(function(ev) {
 				ev.preventDefault();
-
-				
+				console.log($(this));
+				$(this).toggleClass("active");
+				$.ajax({
+					type: "POST",
+					url: base_url+"/dropbox/getFile",
+					data: {note_name: $(this).html()},
+					success: function(response)
+					{
+						$("#markdown_input").val(response);
+						
+					}
+				});
 			});
 		}
 	});
