@@ -1,4 +1,4 @@
-$titleBlue: #1A0066;
+$titleBlue: #2082FF;
 body
 {
 	min-height: 100%;
@@ -13,6 +13,26 @@ div.Clear
 }
 div.parsePage
 {
+	div.jumbotron
+	{
+		padding-top: 18px;
+		background: #333;
+		color: white;
+	}
+	nav.navbar
+	{
+		background: #333;
+		color: white;
+		text-align: center;
+		.navbar-text
+		{
+			color: white;
+		}
+		input
+		{
+			width: 180px;
+		}
+	}
 	div.container
 	{
 		position: relative;
@@ -28,7 +48,7 @@ div.parsePage
 		border-radius: 5px;
 		display: block;
 	}
-	#btn_parse
+	#btn_save_markdown
 	{
 		margin: auto;
 		display: block;

@@ -167,15 +167,14 @@ function start(route) {
     });
 
     app.post("/dropbox/create", function(request, response) {
+      console.log("Creating");
         var app = createApp(request.session);
+        var noteName = request.body.note_name;
         var client = app.client(request.session.access_token);
-        client.put("/test.txt", "here is some data", function(status, reply) {
+        client.put("/"+noteName+".md", "", function(status, reply) {
             console.log(reply);
+            response.send(reply);
         });
-         client.account(function(status, reply){
-            response.send("Test!");
-            console.log(reply);
-         });
     });
 
     app.get("/dropbox/list", function(req, res) {

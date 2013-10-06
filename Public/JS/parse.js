@@ -1,3 +1,5 @@
+var base_url = "http://localhost:9001";
+
 $(document).ready(function() {
 	var dbox = dbox_utility();
 	$("#btn_parse").click(function() {
@@ -9,7 +11,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: 'POST',
 			data: {},
-			url: "http://localhost:9001/dropbox/init",
+			url: base_url+"/dropbox/init",
 			success: function(response)
 			{
 				console.log(response);
@@ -23,33 +25,31 @@ $(document).ready(function() {
 	$("#btn_dropbox_confirm").click(function() {
 		$.ajax({
 			type: "POST",
-			url: "http://localhost:9001/dropbox/confirm",
+			url: base_url+"/dropbox/confirm",
 			success: function(response)
 			{
 				$("#dropboxAccessModal").modal("hide");
 				$("#btn_dropbox").hide();
 				//$("#btn_db_create").fadeIn();
 
-				$.ajax({
-					type: "GET",
-					url: "http://localhost:9001/dropbox/list",
-					success: function(response)
-					{
-						console.log(response);
-					}
-				})
+				refreshFiles();
 			}
 		});
 	});
-	$("#btn_db_create").click(function() {
+	$("#btn_save_name").click(function() {
+		console.log("Save");
 		$.ajax({
 			type: "POST",
-			url: "http://localhost:9001/dropbox/create",
+			data: {note_name: $("#new_file_name").val() },
+			url: base_url+"/dropbox/create",
 			success: function(response)
 			{
 				console.log(response);
+				$("#createFileName").modal("hide");
+				$("#new_file_name").val("");
+				refreshFiles();
 			}
-		})
+		});
 	});
 });
 
@@ -98,4 +98,27 @@ function displayNotecards(questions, answers)
 	};
 
 	$("#notecardsModal").modal("show");
+}
+
+function refreshFiles()
+{
+	$.ajax({
+		type: "GET",
+		url: base_url+"/dropbox/list",
+		success: function(response)
+		{
+			$("#list_notes").html("");
+			//console.log(response);
+			for (var i = response.length - 1; i >= 0; i--) {
+				var newLink = "<a href='#' class='list-group-item'>"+response[i]+"</a>";
+				$("#list_notes").append(newLink);
+			};
+
+			$("#list_notes a").click(function(ev) {
+				ev.preventDefault();
+
+				
+			});
+		}
+	});
 }

@@ -8,6 +8,18 @@ div.Clear {
   clear: both;
   height: 1px; }
 
+div.parsePage div.jumbotron {
+  padding-top: 18px;
+  background: #333;
+  color: white; }
+div.parsePage nav.navbar {
+  background: #333;
+  color: white;
+  text-align: center; }
+  div.parsePage nav.navbar .navbar-text {
+    color: white; }
+  div.parsePage nav.navbar input {
+    width: 180px; }
 div.parsePage div.container {
   position: relative; }
 div.parsePage textarea#markdown_input {
@@ -19,11 +31,11 @@ div.parsePage textarea#markdown_input {
   background: white;
   border-radius: 5px;
   display: block; }
-div.parsePage #btn_parse {
+div.parsePage #btn_save_markdown {
   margin: auto;
   display: block; }
 div.parsePage h1.title {
-  color: #1a0066; }
+  color: #2082ff; }
 div.parsePage div#notecard_container {
   width: 100%;
   position: relative;
@@ -40,7 +52,7 @@ div.parsePage div#notecard_container {
     div.parsePage div#notecard_container div.notecard div {
       width: 45%; }
       div.parsePage div#notecard_container div.notecard div.question {
-        color: #1a0066;
+        color: #2082ff;
         float: left; }
       div.parsePage div#notecard_container div.notecard div.answer {
         float: right; }
