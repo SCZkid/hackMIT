@@ -56,13 +56,6 @@ db.once('open', function callback () {
     	password: "derpderp",
     	documents: {}
     });
-    /*jordan.save(function(error, data) {
-        if(error) {
-        	console.log(error);
-        } else {
-        	console.log(data);
-        }
-    }); */
     User.remove();
     console.log(User);
     User.find(function(err, people) {
@@ -279,7 +272,7 @@ function start(route) {
 
   });
 
-	app.listen(9001);
+	//app.listen(9001);
 	console.log('Server has started.');
 }
 
@@ -314,17 +307,3 @@ function getFile(filename, session)
       });
 }
 
-function addDoc(title, output)
-{
-  var newDoc = new Doc({ 
-      output: output,
-      title: title
-    });
-    newDoc.save(function(error, data) {
-      if(error) {
-        console.log(error);
-      } else {
-        //console.log(data);
-      }
-    });
-}
