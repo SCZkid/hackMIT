@@ -57,17 +57,7 @@ function start(route) {
 	app.get('/parse', function(request, response) {
 		var pathname = url.parse(request.url).pathname;
 
-		var dbox;
-		var app;
-		var key = "8higzkomex2c5jy";
-		var secret = "rueapgelizhsyb1";
-		dbox = require("dbox");
-		app = dbox.app( {"app_key" : key, "app_secret" : secret} );
-
-		app.requesttoken(function(status, request_token) {
-			//console.log(request_token);
-			console.log("Must visit: https://www.dropbox.com/1/oauth/authorize?oauth_token=#"+request_token.oauth_token);
-		});
+		
 
 
 		console.log("Request for " + pathname + " received.");
@@ -75,6 +65,19 @@ function start(route) {
         response.sendfile('Public/MarkdownParse.html')
 		//response.end();
 	});
+
+    app.get('/dropbox/init', function(request, response) {
+        var key = "8higzkomex2c5jy";
+        var secret = "rueapgelizhsyb1";
+        var dbox = require("dbox");
+        var app = dbox.app( {"app_key" : key, "app_secret" : secret} );
+
+        app.requesttoken(function(status, request_token) {
+            //console.log(request_token);
+            
+            console.log("Must visit: https://www.dropbox.com/1/oauth/authorize?oauth_token=#"+request_token.oauth_token);
+        });
+    });
 	app.listen(9001);
 	console.log('Server has started.');
 }
