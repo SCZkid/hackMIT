@@ -108,7 +108,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 //Check port
-var port = process.env.PORT || 3001;
+var port = process.env.PORT || 9001;
 app.listen(port, function() {
   console.log('Express server listening on port ' + port);
 });
@@ -125,10 +125,6 @@ function start(route) {
 
 	app.get('/parse', function(request, response) {
     var pathname = url.parse(request.url).pathname;
-
-    
-
-
     console.log("Request for " + pathname + " received.");
         route(pathname);
         response.sendfile('Public/MarkdownParse.html')
@@ -232,7 +228,7 @@ function start(route) {
     app.post('/addDoc', function(request, response) {
     console.log(request.session.passport.user);
     var newDoc = new Doc({ 
-      output: 
+      output: "test",
       title: "testTitle",
     });
     newDoc.save(function(error, data) {
@@ -266,10 +262,9 @@ function start(route) {
     if(request.session.passport.user) {
       User.findOne({ _id: request.session.passport.user }, function(err, user) {
         console.log(user);
-        for 
       })
     }
-  }
+  });
 
   app.get('/success', function(request, response) {
     User.findOne({ _id: request.session.passport.user }, function (err, user) {
