@@ -40,15 +40,16 @@ db.once('open', function callback () {
     var UserSchema = new Schema({
     	username: String,
     	password: String,
-    	documents: {}
+    	documents: {},
+      dropboxToken: String
     });
     var DocSchema = new Schema({
       text: String,
       title: String,
       tags: [],
       concepts: [],
-      revision: String
-    })
+      revision: Number
+    });
     app.User = User = mongoose.model('User', UserSchema);
     app.Doc = Doc = mongoose.model('Doc', DocSchema);
     var jordan = new User({
@@ -56,20 +57,27 @@ db.once('open', function callback () {
     	password: "derpderp",
     	documents: {}
     });
-    /*jordan.save(function(error, data) {
+    var note = new Doc({
+      text: "none",
+      title: "zzzzz",
+      tags: [],
+      concepts: [],
+      revision: 17
+    })
+    note.save(function(error, data) {
         if(error) {
         	console.log(error);
         } else {
         	console.log(data);
         }
-    }); */
+    }); 
     User.remove();
     console.log(User);
-    User.find(function(err, people) {
+    Doc.find(function(err, notes) {
     	if(err) {
     		console.log(error);
     	} else {
-    		console.log(people);
+    		console.log(notes);
     	}
     })
     
@@ -226,21 +234,21 @@ function start(route) {
     );
 
     app.post('/addDoc', function(request, response) {
-      response.send('yay ' + request.body.notes);
-      db.collections['users'].update({ _id: request.session.passport.user }, {documents: [{ name: "yay", text: request.body.notes}]}, function(err) {
-            console.log(err);
+      var newDoc = new Doc({ 
+        text: request.body.notes,
+        title: "testTitle",
+        tags: ['yay'],
+        concepts: ['this one'],
+        revision: 1
       });
-      console.log("-------------------------------------------------------------------------------");
-      console.log(request.session.passport.user);
-      console.log("_------------------------------------------------------------------------------")
-      User.findOne({ _id: request.session.passport.user }, function(err, data) {
+      response.send(request.body.notes);
+      Doc.find(function(err, notes) {
         if(err) {
           console.log(err);
         } else {
-          console.log("data");
-          console.log(data);
+        console.log(notes);
         }
-      });
+      })
     });
 
     app.post('/addUser', function(request, response) {
