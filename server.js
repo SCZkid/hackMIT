@@ -287,6 +287,7 @@ function start(route) {
 
 exports.start = start;
 exports.app = app;
+exports.mongoose = mongoose;
 
 function createApp(session)
 {
