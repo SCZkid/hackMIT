@@ -6,33 +6,37 @@ var url = require('url');
 var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
-mongoose.connect('mongodb:hack:hack,hack.kalosal.com/wheee');
+var Schema = mongoose.Schema;
+mongoose.connect('mongodb:hack:hack,hack.kalosal.com/test');
 var db = mongoose.connection;
-/*db.once('open', function callback () {
+db.once('open', function callback () {
     console.log("hooray!");
-    var jfaoiwejfoiawe = mongoose.model('jfaoiwejfoiawe', { firstName: String });
-    var jordan = new jfaoiwejfoiawe({
-    	firstName: "Collin"
+    var UserSchema = new Schema({
+    	username: String,
+    	password: String,
+    	documents: {}
+    })
+    var User = mongoose.model('User', UserSchema);
+    var jordan = new User({
+    	username: "jhaines",
+    	password: "kalosalrulez",
+    	documents: {}
     });
     jordan.save(function(error, data) {
         if(error) {
         	console.log(error);
         } else {
-        	console.log("WEHFIOWHEF");
         	console.log(data);
         }
     });
-    jfaoiwejfoiawe.find(function(err, people) {
+    User.find(function(err, people) {
     	if(err) {
     		console.log(error);
     	} else {
-    		console.log("JWEIOJFWEJFOIWEF");
     		console.log(people);
     	}
     })
-    //var Jordan = new Person({ firstName: 'Jordan', lastName: 'Haines', age: 20});
 });
-*/
 
 app.set('port', process.env.PORT || 3001);
 app.use(express.favicon());
@@ -54,6 +58,7 @@ function start(route) {
         response.sendfile('Public/testPage.html')
 		//response.end();
 	});
+
 	app.get('/parse', function(request, response) {
 		var pathname = url.parse(request.url).pathname;
 
@@ -75,6 +80,12 @@ function start(route) {
         response.sendfile('Public/MarkdownParse.html')
 		//response.end();
 	});
+
+	app.get('/login', function(request, response) {
+        var pathname = url.parse(request.url).pathname;
+	    console.log(pathname);
+	});
+
 	app.listen(9001);
 	console.log('Server has started.');
 }
