@@ -3,12 +3,31 @@ var http = require('http');
 var url = require('url');
 
 // Express
-var express = require('express');
+var express = require('express')
+  , http = require('http')
+  , dbox = require('dbox')
+  , path = require('path');
 var passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy;
 
 //--------------------------------------------------------------------------------------------
 var app = express();
+
+app.configure(function(){
+  app.set('port', process.env.PORT || 9001);
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  app.use(express.favicon());
+  app.use(express.logger('dev'));
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(express.cookieParser('d9nEPGiAeSwGFUN2Ra8CGBmq'));
+  app.use(express.session());
+  app.use(app.router);
+  app.use(require('less-middleware')({ src: __dirname + '/public' }));
+  app.use(express.static(path.join(__dirname, 'public')));
+});
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 mongoose.connect('mongodb:hack:hack,hack.kalosal.com/test');
@@ -96,26 +115,75 @@ function start(route) {
 	});
 
 	app.get('/parse', function(request, response) {
-		var pathname = url.parse(request.url).pathname;
+    var pathname = url.parse(request.url).pathname;
 
-		var dbox;
-		var app;
-		var key = "8higzkomex2c5jy";
-		var secret = "rueapgelizhsyb1";
-		dbox = require("dbox");
-		app = dbox.app( {"app_key" : key, "app_secret" : secret} );
-
-		app.requesttoken(function(status, request_token) {
-			//console.log(request_token);
-			console.log("Must visit: https://www.dropbox.com/1/oauth/authorize?oauth_token=#"+request_token.oauth_token);
-		});
+    
 
 
-		console.log("Request for " + pathname + " received.");
+    console.log("Request for " + pathname + " received.");
         route(pathname);
-        response.sendfile('Public/MarkdownParse.html');
-		//response.end();
-	});
+        response.sendfile('Public/MarkdownParse.html')
+    //response.end();
+  });
+
+    app.post('/dropbox/init', function(request, response) {
+        var key = "8higzkomex2c5jy";
+        var secret = "rueapgelizhsyb1";
+        var dbox = require("dbox");
+        var app = dbox.app({ 
+            "app_key": key, 
+            "app_secret": secret,
+            "root": "sandbox"
+        });
+
+        app.requesttoken(function(status, request_token) {
+
+            if (status === 200)
+            {
+                request.session.request_token = request_token;
+                request.session.app_info = {
+                    app_key: key,
+                    app_secret: secret,
+                    root: "sandbox"
+                }
+            }
+            //console.log(request_token);
+            response.send({status: status, url: "https://www.dropbox.com/1/oauth/authorize?oauth_token=" + request_token.oauth_token});
+        });
+    });
+
+    app.post('/dropbox/confirm', function(request, response) {
+        //must have already had user authenticate
+        if (request.session.app_info != null)
+        {
+            var app = dbox.app({
+                "app_key": request.session.app_info.app_key,
+                "app_secret": request.session.app_info.app_secret,
+                "root": "sandbox"
+            });
+
+            app.accesstoken(request.session.request_token, function(status, access_token) {
+                if (status == 200) request.session.access_token = access_token;
+                response.send({status: status, access_token: access_token});
+            });
+        }
+    });
+
+    app.post("/dropbox/create", function(request, response) {
+        var app = dbox.app({
+                "app_key": request.session.app_info.app_key,
+                "app_secret": request.session.app_info.app_secret,
+                "root": "sandbox"
+            });
+        var client = app.client(request.session.access_token);
+        // client.put("test.txt", "here is some data", function (status, reply) {
+        //     console.log(reply);
+        // });
+         client.account(function(status, reply){
+            response.send(reply);
+            console.log(reply);
+         });
+    });
 
 	app.get('/login', function(request, response) {
 		response.sendfile('Public/testPage.html');
