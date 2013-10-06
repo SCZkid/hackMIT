@@ -5,7 +5,32 @@ $(document).ready(function() {
 	});
 
 	$("#btn_dropbox").click(function() {
-		//dbox.init();
+		$.ajax({
+			type: 'POST',
+			data: {},
+			url: "http://localhost:9001/dropbox/init",
+			success: function(response)
+			{
+				console.log(response);
+				$("#dropbox_link").attr("href", response.url);
+
+				$("#dropboxAccessModal").modal("show");
+			}
+		});
+	});
+
+	$("#btn_dropbox_confirm").click(function() {
+		$.ajax({
+			type: "POST",
+			url: "http://localhost:9001/dropbox/confirm",
+			success: function(response)
+			{
+				$.ajax({
+					type: "POST",
+					url: "http://localhost:9001/dropbox/create"
+				});
+			}
+		});
 	});
 });
 
