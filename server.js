@@ -189,7 +189,7 @@ function start(route) {
         var app = createApp(req.session);
         var client = app.client(req.session.access_token);
         client.readdir("/", function(status, reply) {
-          console.log(reply);
+          //console.log(reply);
           res.send(reply);
 
 
@@ -214,7 +214,7 @@ function start(route) {
 
   app.get('/login', function(request, response) {
     response.sendfile('Public/testPage.html');
-    console.log("!!!!!!");
+    //console.log("!!!!!!");
   })
 
     app.post('/login',
@@ -277,6 +277,10 @@ function start(route) {
 
   });
 
+  app.get("/notecards", function(request, response) {
+    var example = {}
+  });
+
 	//app.listen(9001);
 	console.log('Server has started.');
 }
@@ -296,12 +300,6 @@ function createApp(session)
     });
   }
 }
-
-function getFile(filename, session)
-{
-
-}
-
 //AlchemyAPI
 var alchemyapi = require('./alchemyapi');
 
@@ -366,7 +364,7 @@ function addDoc(title, output_1)
 {
   //console.log("Adding");
   //console.log(title);
-  console.log(output_1);
+  //console.log(output_1);
   var newDoc = new Doc({ 
       output: output_1,
       title: title
