@@ -74,6 +74,25 @@
 		      </div><!-- /.modal-content -->
 		    </div><!-- /.modal-dialog -->
 		  </div><!-- /.modal -->
+		  <div class="modal fade" id="loginDialog" tabindex="-1" role="dialog">
+		    <div class="modal-dialog">
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		          <h4 class="modal-title">Login</h4>
+		        </div>
+		        <div class="modal-body">
+		          <p>Please login by entering credentials below:</p>
+		  			<input type="text" id="login_username" placeholder="username"><br/>
+		  			<input type="password" id="login_password" placeholder="password"<br/>
+		        </div>
+		        <div class="modal-footer">
+		        	<button class="btn btn-primary" id="btn_submit_login">Create File</button>
+		        	<button class="btn btn-default" data-dismiss="modal" data-target="#loginDialog">Cancel</button>
+		        </div>
+		      </div><!-- /.modal-content -->
+		    </div><!-- /.modal-dialog -->
+		  </div><!-- /.modal -->
 
 
 
@@ -83,7 +102,7 @@
 	        		<h2>Organize your notes by concept, not lecture.</h2>
 	        		<h3>Upload or paste your markdown notes to get started</h3>
 						<button class="btn btn-primary" id="btn_dropbox">Configure Dropbox Folder</button>
-						<button class="btn btn-success" id="btn_upload">Upload Any File</button>
+						<button class="btn btn-success" id="btn_login">Login</button>
 				</div>
 				<div class="row lowerContent">
 					<div class="col-md-3">
