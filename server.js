@@ -186,14 +186,7 @@ function start(route) {
     });
 
     app.post("/dropbox/getFile", function(req, res) {
-      var app = createApp(req.session);
-      var client = app.client(req.session.access_token);
-      var noteName = req.body.note_name;
-      console.log("Hello!");
-      console.log(noteName);
-      client.get(noteName, function(status, reply, meta) {
-        res.send(reply.toString());
-      });
+      res.send(getFile(req.body.note_name, req.session));
     });
 
     app.post("/dropbox/saveFile", function(req, res) {
@@ -210,6 +203,17 @@ function start(route) {
         var app = createApp(req.session);
         var client = app.client(req.session.access_token);
         client.readdir("/", function(status, reply) {
+          //Need to run each reply through comments
+          for (var i = reply.length - 1; i >= 0; i--) {
+            if (reply[i].substring(1) != undefined)
+            {
+              var contents = getFile(reply[i].substring(1), req.session);
+              if (contents)
+              {
+                revision(contents);
+              }
+            }
+          };
           res.send(reply);
         });
     });
@@ -290,4 +294,20 @@ function createApp(session)
       "root": app_root
     });
   }
+}
+
+function getFile(filename, session)
+{
+      var app = createApp(session);
+      var client = app.client(session.access_token);
+      var noteName = filename; //req.body.note_name;
+      console.log(noteName);
+      client.get(noteName, function(status, reply, meta) {
+        if (reply)
+        {
+          return reply.toString();
+        } else {
+          return "";
+        }
+      });
 }
