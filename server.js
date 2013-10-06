@@ -168,6 +168,7 @@ function start(route) {
       var noteName = req.body.note_name; //req.body.note_name;
       client.get(noteName, function(status, reply, meta) {
         res.send(reply.toString());
+        revision(reply.toString(), noteName);
       });
     });
 
@@ -358,6 +359,9 @@ function entities(output, contents, title) {
 
 function addDoc(title, output)
 {
+  console.log("Adding");
+  console.log(title);
+  console.log(output);
   var newDoc = new Doc({ 
       output: output,
       title: title

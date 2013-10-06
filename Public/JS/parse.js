@@ -141,6 +141,7 @@ function refreshFiles()
 			$("#list_notes a").click(function(ev) {
 				ev.preventDefault();
 				console.log($(this));
+				$("#list_notes a").removeClass("active");
 				$(this).toggleClass("active");
 				$.ajax({
 					type: "POST",
