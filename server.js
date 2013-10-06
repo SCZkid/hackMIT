@@ -24,6 +24,8 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(express.cookieParser('d9nEPGiAeSwGFUN2Ra8CGBmq'));
   app.use(express.session());
+  app.use(passport.initialize());
+  app.use(passport.session());
   app.use(app.router);
   app.use(require('less-middleware')({ src: __dirname + '/public' }));
   app.use(express.static(path.join(__dirname, 'public')));
@@ -39,8 +41,16 @@ db.once('open', function callback () {
     	username: String,
     	password: String,
     	documents: {}
+    });
+    var DocSchema = new Schema({
+      text: String,
+      title: String,
+      tags: [],
+      concepts: [],
+      revision: String
     })
     app.User = User = mongoose.model('User', UserSchema);
+    app.Doc = Doc = mongoose.model('Doc', DocSchema);
     var jordan = new User({
     	username: "stevenz",
     	password: "derpderp",
@@ -68,8 +78,6 @@ db.once('open', function callback () {
 app.set('port', process.env.PORT || 3001);
 app.use(express.favicon());
 app.use(express.bodyParser());
-app.use(passport.initialize());
-app.use(passport.session());
 //app.use(express.methodOverride());
 
 
@@ -177,6 +185,27 @@ function start(route) {
         });
     });
 
+    app.post("/dropbox/getFile", function(req, res) {
+      var app = createApp(req.session);
+      var client = app.client(req.session.access_token);
+      var noteName = req.body.note_name;
+      console.log("Hello!");
+      console.log(noteName);
+      client.get(noteName, function(status, reply, meta) {
+        res.send(reply.toString());
+      });
+    });
+
+    app.post("/dropbox/saveFile", function(req, res) {
+      var app = createApp(req.session);
+      var client = app.client(req.session.access_token);
+      var noteName = req.body.note_name;
+      var noteContent = req.body.note_content;
+      client.put(noteName, noteContent, function(status, reply) {
+        res.send(reply);
+      });
+    })
+
     app.get("/dropbox/list", function(req, res) {
         var app = createApp(req.session);
         var client = app.client(req.session.access_token);
@@ -185,16 +214,64 @@ function start(route) {
         });
     });
 
-	app.get('/login', function(request, response) {
-		response.sendfile('Public/testPage.html');
-		console.log("!!!!!!");
-	})
+  app.get('/login', function(request, response) {
+    response.sendfile('Public/testPage.html');
+    console.log("!!!!!!");
+  })
 
     app.post('/login',
-        passport.authenticate('local', { successRedirect: '/loginsuccess',
-                                   failureRedirect: '/loginfail',
+        passport.authenticate('local', { successRedirect: '/success',
+                                   failureRedirect: '/login',
                                    failureFlash: false })
     );
+
+    app.post('/addDoc', function(request, response) {
+      response.send('yay ' + request.body.notes);
+      db.collections['users'].update({ _id: request.session.passport.user }, {documents: [{ name: "yay", text: request.body.notes}]}, function(err) {
+            console.log(err);
+      });
+      console.log("-------------------------------------------------------------------------------");
+      console.log(request.session.passport.user);
+      console.log("_------------------------------------------------------------------------------")
+      User.findOne({ _id: request.session.passport.user }, function(err, data) {
+        if(err) {
+          console.log(err);
+        } else {
+          console.log("data");
+          console.log(data);
+        }
+      });
+    });
+
+    app.post('/addUser', function(request, response) {
+        console.log(request.body);
+        var newUser = new User({
+          username: request.body.username,
+          password: request.body.password,
+          documents: [],
+          dropboxToken: ''
+        });
+        newUser.save(function(error, data) {
+          if(error) {
+            console.log(error);
+          } else {
+            console.log(data);
+          }
+        })
+    });
+
+    app.get('/success', function(request, response) {
+      User.findOne({ _id: request.session.passport.user }, function (err, user) {
+          console.log(user);
+          //response.sendfile('Public/testPage.html');
+          var body = '';
+          for(var i = 0; i < user.documents.length; i++)
+            body += '<p>' + JSON.stringify(user.documents[i].text) + '</p>';
+          response.send(body);
+          //var documents = user.documents;
+      });
+
+    });
 
 	app.listen(9001);
 	console.log('Server has started.');
