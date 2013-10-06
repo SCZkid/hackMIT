@@ -3,11 +3,12 @@
 	"description":        "Note parsing service",
 	"private":            "true", 
 	"dependencies": {
-	    "dbox":           "0.6.1",
-	    "express":        "3.x",
+		"express": "3.0.0rc5",
+	    "jade": "*",
+	    "less-middleware": "*",
+	    "dbox": "0.5.5",
 	    "mongodb":        "*",
 	    "mongoose":       "*",
-	    "jade":           "*",
 	    "passport":       "*",
 	    "passport-local": "*",
         "request":        "~2.27.0"

@@ -12,6 +12,7 @@ var passport = require('passport')
 
 //--------------------------------------------------------------------------------------------
 var app = express();
+var app_root = "sandbox";
 
 app.configure(function(){
   app.set('port', process.env.PORT || 9001);
@@ -127,13 +128,13 @@ function start(route) {
   });
 
     app.post('/dropbox/init', function(request, response) {
-        var key = "8higzkomex2c5jy";
-        var secret = "rueapgelizhsyb1";
+        var key = "kbetzb9w42keiiq";
+        var secret = "betdjmiwex34w99";
         var dbox = require("dbox");
         var app = dbox.app({ 
             "app_key": key, 
             "app_secret": secret,
-            "root": "sandbox"
+            "root": app_root
         });
 
         app.requesttoken(function(status, request_token) {
@@ -144,7 +145,7 @@ function start(route) {
                 request.session.app_info = {
                     app_key: key,
                     app_secret: secret,
-                    root: "sandbox"
+                    root: app_root
                 }
             }
             //console.log(request_token);
@@ -156,11 +157,7 @@ function start(route) {
         //must have already had user authenticate
         if (request.session.app_info != null)
         {
-            var app = dbox.app({
-                "app_key": request.session.app_info.app_key,
-                "app_secret": request.session.app_info.app_secret,
-                "root": "sandbox"
-            });
+            var app = createApp(request.session);
 
             app.accesstoken(request.session.request_token, function(status, access_token) {
                 if (status == 200) request.session.access_token = access_token;
@@ -170,19 +167,23 @@ function start(route) {
     });
 
     app.post("/dropbox/create", function(request, response) {
-        var app = dbox.app({
-                "app_key": request.session.app_info.app_key,
-                "app_secret": request.session.app_info.app_secret,
-                "root": "sandbox"
-            });
+        var app = createApp(request.session);
         var client = app.client(request.session.access_token);
-        // client.put("test.txt", "here is some data", function (status, reply) {
-        //     console.log(reply);
-        // });
+        client.put("/test.txt", "here is some data", function(status, reply) {
+            console.log(reply);
+        });
          client.account(function(status, reply){
-            response.send(reply);
+            response.send("Test!");
             console.log(reply);
          });
+    });
+
+    app.get("/dropbox/list", function(req, res) {
+        var app = createApp(req.session);
+        var client = app.client(req.session.access_token);
+        client.readdir("/", function(status, reply) {
+          res.send(reply);
+        });
     });
 
 	app.get('/login', function(request, response) {
@@ -202,3 +203,15 @@ function start(route) {
 
 exports.start = start;
 exports.app = app;
+
+function createApp(session)
+{
+  if (session.app_info != null)
+  {
+    return dbox.app({
+      "app_key": session.app_info.app_key,
+      "app_secret": session.app_info.app_secret,
+      "root": app_root
+    });
+  }
+}

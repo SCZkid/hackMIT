@@ -3,6 +3,7 @@ $(document).ready(function() {
 	$("#btn_parse").click(function() {
 		createNotecards($("#markdown_input").val());
 	});
+	$("#btn_db_create").hide();
 
 	$("#btn_dropbox").click(function() {
 		$.ajax({
@@ -25,12 +26,30 @@ $(document).ready(function() {
 			url: "http://localhost:9001/dropbox/confirm",
 			success: function(response)
 			{
+				$("#dropboxAccessModal").modal("hide");
+				$("#btn_dropbox").hide();
+				//$("#btn_db_create").fadeIn();
+
 				$.ajax({
-					type: "POST",
-					url: "http://localhost:9001/dropbox/create"
-				});
+					type: "GET",
+					url: "http://localhost:9001/dropbox/list",
+					success: function(response)
+					{
+						console.log(response);
+					}
+				})
 			}
 		});
+	});
+	$("#btn_db_create").click(function() {
+		$.ajax({
+			type: "POST",
+			url: "http://localhost:9001/dropbox/create",
+			success: function(response)
+			{
+				console.log(response);
+			}
+		})
 	});
 });
 
