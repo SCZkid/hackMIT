@@ -132,7 +132,7 @@ function refreshFiles()
 		success: function(response)
 		{
 			$("#list_notes").html("");
-			//console.log(response);
+			console.log(response);
 			for (var i = response.length - 1; i >= 0; i--) {
 				var newLink = "<a href='#' class='list-group-item'>"+response[i].substring(1)+"</a>";
 				$("#list_notes").append(newLink);

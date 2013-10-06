@@ -36,7 +36,6 @@ var Schema = mongoose.Schema;
 mongoose.connect('mongodb:hack:hack,hack.kalosal.com/test');
 var db = mongoose.connection;
 db.once('open', function callback () {
-    console.log("hooray!");
     var UserSchema = new Schema({
     	username: String,
     	password: String,
@@ -55,17 +54,7 @@ db.once('open', function callback () {
     	username: "stevenz",
     	password: "derpderp",
     	documents: {}
-    });
-    User.remove();
-    console.log(User);
-    User.find(function(err, people) {
-    	if(err) {
-    		console.log(error);
-    	} else {
-    		console.log(people);
-    	}
-    })
-    
+    });    
 });
 
 app.set('port', process.env.PORT || 3001);
@@ -77,7 +66,6 @@ app.use(express.bodyParser());
 passport.use(new LocalStrategy(
   function(username, password, done) {
     User.findOne({ username: username }, function (err, user) {
-    	console.log(user);
       if (err) { return done(err); }
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
@@ -197,22 +185,24 @@ function start(route) {
         var app = createApp(req.session);
         var client = app.client(req.session.access_token);
         client.readdir("/", function(status, reply) {
+          console.log(reply);
+          res.send(reply);
           //Need to run each reply through comments
-          for (var i = reply.length - 1; i >= 0; i--) {
-            if (reply[i].substring(1) != undefined)
-            {
-              var app = createApp(req.session);
-              var client = app.client(req.session.access_token);
-              var noteName = req.body.note_name; //req.body.note_name;
-              client.get(noteName, function(status, reply, meta) {
-                //res.send(reply.toString());
+          // for (var i = reply.length - 1; i >= 0; i--) {
+          //   if (reply[i].substring(1) != undefined)
+          //   {
+          //     var app = createApp(req.session);
+          //     var client = app.client(req.session.access_token);
+          //     var noteName = reply[i].substring(1); //req.body.note_name;
+          //     client.get(noteName, function(status, reply, meta) {
+          //       //res.send(reply.toString());
 
-                revision(reply.toString(), reply[i].substring(1));
-              });
-            }
-          };
+          //       revision(reply.toString(), noteName);
+          //     });
+          //   }
+          // };
 
-          res.send(reply.toString());
+          // res.send(reply.toString());
         });
     });
 
@@ -306,3 +296,77 @@ function getFile(filename, session)
 
 }
 
+//AlchemyAPI
+var alchemyapi = require('./alchemyapi');
+
+
+//var app = server.app;
+//app.get('/example', example);
+
+var revision = function (contents, title) {
+  var output = {};
+  concepts(output, contents, title);
+}
+
+//var contents = 'My physics professor says that Newton discovered F=m*a, where m is mass and a is acceleration. F is force, measured in Newtons, an SI unit.';
+
+/* function example(req, res) {
+  var output = {};
+
+  concepts(req, res, output);
+}
+*/
+
+function concepts(output, contents, title) {
+  alchemyapi.concepts('text', contents, { 'showSourceText':0 }, function(error, response) {
+    output['concepts'] = { text:contents, response:JSON.stringify(response,null,4), results:response['concepts'] };
+    keywords(output, contents, title);
+  });
+}
+
+function keywords(output, contents, title) {
+  alchemyapi.keywords('text', contents, {}, function(error, response) {
+    output['keywords'] = { text:contents, response:JSON.stringify(response,null,4), results:response['keywords'] };
+    category(output, contents, title);
+  });
+}
+
+function category(output, contents, title) {
+  alchemyapi.category('text', contents, {}, function(error, response) {
+    output['relations'] = { text:contents, response:JSON.stringify(response,null,4), results:response };
+    relations(output, contents, title);
+  });
+}
+
+function relations(output, contents, title) {
+  alchemyapi.relations('text', contents, {}, function(error, response) {
+    output['relations'] = {text:contents, response:JSON.stringify(response,null,4), results:response['relations'] };
+    entities(output, contents, title);
+  });
+}
+
+function entities(output, contents, title) {
+  alchemyapi.entities('text', contents, { 'quotations':1 }, function(error, response) {
+    output['entities'] = { text:contents, response:JSON.stringify(response,null,4), results:response['entities'] };
+    // THIS HAS TO BE REPLACED WITH AN INSERT INTO THE DATABASE!!!!!
+    addDoc(title, output);
+  });
+}
+
+// A test for the revision function
+//revision("This is a really bad test about Newton and cookies and milk and the moon.");
+
+function addDoc(title, output)
+{
+  var newDoc = new Doc({ 
+      output: output,
+      title: title
+    });
+    newDoc.save(function(error, data) {
+      if(error) {
+        console.log(error);
+      } else {
+        //console.log(data);
+      }
+    });
+}
