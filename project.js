@@ -59,4 +59,4 @@ function entities(output, contents, title) {
 }
 
 // A test for the revision function
-//revision("This is a really bad test about Newton and cookies and milk and the moon.");
+revision("This is a really bad test about Newton and cookies and milk and the moon.");
