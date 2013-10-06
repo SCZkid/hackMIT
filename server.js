@@ -64,20 +64,26 @@ db.once('open', function callback () {
       concepts: [],
       revision: 17
     })
-    note.save(function(error, data) {
+    /*note.save(function(error, data) {
         if(error) {
         	console.log(error);
         } else {
         	console.log(data);
         }
-    }); 
+    }); */
+    note.title = "new title";
     User.remove();
     console.log(User);
     Doc.find(function(err, notes) {
     	if(err) {
     		console.log(error);
     	} else {
-    		console.log(notes);
+    		for(var i = 0; i < notes.length; i++) {
+          if(notes[i].title === 'new title') {
+            notes[i].title = 'something more original';
+          }
+          console.log(notes[i]);
+        }
     	}
     })
     
@@ -225,61 +231,62 @@ function start(route) {
   app.get('/login', function(request, response) {
     response.sendfile('Public/testPage.html');
     console.log("!!!!!!");
-  })
+  });
 
-    app.post('/login',
-        passport.authenticate('local', { successRedirect: '/success',
-                                   failureRedirect: '/login',
-                                   failureFlash: false })
-    );
+  app.post('/login',
+      passport.authenticate('local', { successRedirect: '/success',
+                                 failureRedirect: '/login',
+                                 failureFlash: false })
+  );
 
-    app.post('/addDoc', function(request, response) {
-      var newDoc = new Doc({ 
-        text: request.body.notes,
-        title: "testTitle",
-        tags: ['yay'],
-        concepts: ['this one'],
-        revision: 1
+  app.post('/addDoc', function(request, response) {
+    console.log(request.session.passport.user);
+    var newDoc = new Doc({ 
+      text: request.body.notes,
+      title: "testTitle",
+      tags: ['yay'],
+      concepts: ['this one'],
+      revision: 1
+    });
+    newDoc.save(function(error, data) {
+      if(error) {
+        console.log(error);
+      } else {
+        console.log(data);
+      }
+    });
+    response.send(request.body.notes);
+  });
+
+  app.post('/addUser', function(request, response) {
+      console.log(request.body);
+      var newUser = new User({
+        username: request.body.username,
+        password: request.body.password,
+        documents: [],
+        dropboxToken: ''
       });
-      response.send(request.body.notes);
-      Doc.find(function(err, notes) {
-        if(err) {
-          console.log(err);
+      newUser.save(function(error, data) {
+        if(error) {
+          console.log(error);
         } else {
-        console.log(notes);
+          console.log(data);
         }
-      })
-    });
-
-    app.post('/addUser', function(request, response) {
-        console.log(request.body);
-        var newUser = new User({
-          username: request.body.username,
-          password: request.body.password,
-          documents: [],
-          dropboxToken: ''
-        });
-        newUser.save(function(error, data) {
-          if(error) {
-            console.log(error);
-          } else {
-            console.log(data);
-          }
-        })
-    });
-
-    app.get('/success', function(request, response) {
-      User.findOne({ _id: request.session.passport.user }, function (err, user) {
-          console.log(user);
-          //response.sendfile('Public/testPage.html');
-          var body = '';
-          for(var i = 0; i < user.documents.length; i++)
-            body += '<p>' + JSON.stringify(user.documents[i].text) + '</p>';
-          response.send(body);
-          //var documents = user.documents;
       });
+  });
 
+  app.get('/success', function(request, response) {
+    User.findOne({ _id: request.session.passport.user }, function (err, user) {
+        console.log(user);
+        //response.sendfile('Public/testPage.html');
+        var body = '';
+        for(var i = 0; i < user.documents.length; i++)
+          body += '<p>' + JSON.stringify(user.documents[i].text) + '</p>';
+        response.send(body);
+        //var documents = user.documents;
     });
+
+  });
 
 	app.listen(9001);
 	console.log('Server has started.');
