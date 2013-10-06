@@ -75,7 +75,6 @@ db.once('open', function callback () {
     
 });
 
-app.set('port', process.env.PORT || 3001);
 app.use(express.favicon());
 app.use(express.bodyParser());
 //app.use(express.methodOverride());
@@ -108,7 +107,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 //Check port
-var port = process.env.PORT || 3001;
+var port = process.env.PORT || 9001;
 app.listen(port, function() {
   console.log('Express server listening on port ' + port);
 });
@@ -273,7 +272,7 @@ function start(route) {
 
     });
 
-	app.listen(9001);
+//	app.listen(9001);
 	console.log('Server has started.');
 }
 
