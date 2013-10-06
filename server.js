@@ -40,13 +40,15 @@ db.once('open', function callback () {
     var UserSchema = new Schema({
     	username: String,
     	password: String,
-    	documents: {},
-      dropboxToken: String
+    	documents: {}
     });
     var DocSchema = new Schema({
-      output: String,
-      title: String
-    });
+      text: String,
+      title: String,
+      tags: [],
+      concepts: [],
+      revision: String
+    })
     app.User = User = mongoose.model('User', UserSchema);
     app.Doc = Doc = mongoose.model('Doc', DocSchema);
     var jordan = new User({
@@ -54,22 +56,22 @@ db.once('open', function callback () {
     	password: "derpderp",
     	documents: {}
     });
-    var note = new Doc({
-      note_user: String,
-      output: "none",
-      title: "zzzzz"
-    })
-    /*note.save(function(error, data) {
+    /*jordan.save(function(error, data) {
         if(error) {
         	console.log(error);
         } else {
         	console.log(data);
         }
     }); */
-    note.title = "new title";
     User.remove();
     console.log(User);
-    console.log(findNotes());
+    User.find(function(err, people) {
+    	if(err) {
+    		console.log(error);
+    	} else {
+    		console.log(people);
+    	}
+    })
     
 });
 
@@ -106,7 +108,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 //Check port
-var port = process.env.PORT || 3001;
+var port = process.env.PORT || 9001;
 app.listen(port, function() {
   console.log('Express server listening on port ' + port);
 });
@@ -123,10 +125,6 @@ function start(route) {
 
 	app.get('/parse', function(request, response) {
     var pathname = url.parse(request.url).pathname;
-
-    
-
-
     console.log("Request for " + pathname + " received.");
         route(pathname);
         response.sendfile('Public/MarkdownParse.html')
@@ -184,14 +182,7 @@ function start(route) {
     });
 
     app.post("/dropbox/getFile", function(req, res) {
-      var app = createApp(req.session);
-      var client = app.client(req.session.access_token);
-      var noteName = req.body.note_name;
-      console.log("Hello!");
-      console.log(noteName);
-      client.get(noteName, function(status, reply, meta) {
-        res.send(reply.toString());
-      });
+      res.send(getFile(req.body.note_name, req.session));
     });
 
     app.post("/dropbox/saveFile", function(req, res) {
@@ -208,6 +199,17 @@ function start(route) {
         var app = createApp(req.session);
         var client = app.client(req.session.access_token);
         client.readdir("/", function(status, reply) {
+          //Need to run each reply through comments
+          for (var i = reply.length - 1; i >= 0; i--) {
+            if (reply[i].substring(1) != undefined)
+            {
+              var contents = getFile(reply[i].substring(1), req.session);
+              if (contents)
+              {
+                revision(contents, reply[i].substring(1));
+              }
+            }
+          };
           res.send(reply);
         });
     });
@@ -215,22 +217,19 @@ function start(route) {
   app.get('/login', function(request, response) {
     response.sendfile('Public/testPage.html');
     console.log("!!!!!!");
-  });
+  })
 
-  app.post('/login',
-      passport.authenticate('local', { successRedirect: '/success',
-                                 failureRedirect: '/login',
-                                 failureFlash: false })
-  );
+    app.post('/login',
+        passport.authenticate('local', { successRedirect: '/success',
+                                   failureRedirect: '/login',
+                                   failureFlash: false })
+    );
 
-  app.post('/addDoc', function(request, response) {
+    app.post('/addDoc', function(request, response) {
     console.log(request.session.passport.user);
     var newDoc = new Doc({ 
-      text: request.body.notes,
+      output: "test",
       title: "testTitle",
-      tags: ['yay'],
-      concepts: ['this one'],
-      revision: 1
     });
     newDoc.save(function(error, data) {
       if(error) {
@@ -263,10 +262,9 @@ function start(route) {
     if(request.session.passport.user) {
       User.findOne({ _id: request.session.passport.user }, function(err, user) {
         console.log(user);
-        for 
       })
     }
-  }
+  });
 
   app.get('/success', function(request, response) {
     User.findOne({ _id: request.session.passport.user }, function (err, user) {
@@ -300,12 +298,33 @@ function createApp(session)
   }
 }
 
-function findNotes() {
-  Doc.find(function(err, notes) {
-    if(err) {
-      return err;
-    } else {
-      return notes;
-    }
-  })
+function getFile(filename, session)
+{
+      var app = createApp(session);
+      var client = app.client(session.access_token);
+      var noteName = filename; //req.body.note_name;
+      console.log(noteName);
+      client.get(noteName, function(status, reply, meta) {
+        if (reply)
+        {
+          return reply.toString();
+        } else {
+          return "";
+        }
+      });
+}
+
+function addDoc(title, output)
+{
+  var newDoc = new Doc({ 
+      output: output,
+      title: title
+    });
+    newDoc.save(function(error, data) {
+      if(error) {
+        console.log(error);
+      } else {
+        //console.log(data);
+      }
+    });
 }
