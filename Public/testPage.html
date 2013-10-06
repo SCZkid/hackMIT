@@ -9,15 +9,25 @@
 
     <body>
         <h1> NoteParser </h1>
+
+        <form id="addUser" action="/addUser" method="post">
+        Username: <input id="username" type="textfield" name="username">
+        Password: <input id="password" type="password" name="password">
+        <button id="add"> Add </button>
+        </form>
+
+        <h2> ----------------------------------------------------------- </h2>
+
         <form id="userLogin" action="/login" method="post">
         Username: <input id="username" type="textfield" name="username">
         Password: <input id="password" type="password" name="password">
         <button id="loginSubmit"> Login </button>
         </form>
         
-        <div id="noteContainer">
-            <textarea id="notes"></textarea>
-        </div>
+        <form id="addNote" action="/addDoc" method="post">
+            <textarea id="notes" name="notes"></textarea>
+            <button id="addNotes"> Save </button>
+        </form>
 
         <input id="parseText" type="submit">
     </body>
