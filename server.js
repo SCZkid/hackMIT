@@ -44,11 +44,8 @@ db.once('open', function callback () {
       dropboxToken: String
     });
     var DocSchema = new Schema({
-      text: String,
-      title: String,
-      tags: [],
-      concepts: [],
-      revision: Number
+      output: String,
+      title: String
     });
     app.User = User = mongoose.model('User', UserSchema);
     app.Doc = Doc = mongoose.model('Doc', DocSchema);
@@ -58,11 +55,8 @@ db.once('open', function callback () {
     	documents: {}
     });
     var note = new Doc({
-      text: "none",
+      output: "none",
       title: "zzzzz",
-      tags: [],
-      concepts: [],
-      revision: 17
     })
     /*note.save(function(error, data) {
         if(error) {
@@ -74,18 +68,7 @@ db.once('open', function callback () {
     note.title = "new title";
     User.remove();
     console.log(User);
-    Doc.find(function(err, notes) {
-    	if(err) {
-    		console.log(error);
-    	} else {
-    		for(var i = 0; i < notes.length; i++) {
-          if(notes[i].title === 'new title') {
-            notes[i].title = 'something more original';
-          }
-          console.log(notes[i]);
-        }
-    	}
-    })
+    console.log(findNotes());
     
 });
 
@@ -275,6 +258,15 @@ function start(route) {
       });
   });
 
+  app.get('/userNotes', function(request, response) {
+    if(request.session.passport.user) {
+      User.findOne({ _id: request.session.passport.user }, function(err, user) {
+        console.log(user);
+        for 
+      })
+    }
+  }
+
   app.get('/success', function(request, response) {
     User.findOne({ _id: request.session.passport.user }, function (err, user) {
         console.log(user);
@@ -305,4 +297,14 @@ function createApp(session)
       "root": app_root
     });
   }
+}
+
+function findNotes() {
+  Doc.find(function(err, notes) {
+    if(err) {
+      return err;
+    } else {
+      return notes;
+    }
+  })
 }
