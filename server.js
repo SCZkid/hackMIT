@@ -42,11 +42,8 @@ db.once('open', function callback () {
     	documents: {}
     });
     var DocSchema = new Schema({
-      text: String,
-      title: String,
-      tags: [],
-      concepts: [],
-      revision: String
+      output: {},
+      title: {type: String, unique: true}
     })
     app.User = User = mongoose.model('User', UserSchema);
     app.Doc = Doc = mongoose.model('Doc', DocSchema);
@@ -183,25 +180,33 @@ function start(route) {
     })
 
     app.get("/dropbox/list", function(req, res) {
+        //db.dropCollection("docs");     
+        // Doc.find(function(err, myDocs) {
+        //   for(var i = myDocs.length - 1; i >= 0; i--) {
+        //     delete myDocs[i];
+        //   }
+        // });   
         var app = createApp(req.session);
         var client = app.client(req.session.access_token);
         client.readdir("/", function(status, reply) {
           console.log(reply);
           res.send(reply);
-          //Need to run each reply through comments
-          // for (var i = reply.length - 1; i >= 0; i--) {
-          //   if (reply[i].substring(1) != undefined)
-          //   {
-          //     var app = createApp(req.session);
-          //     var client = app.client(req.session.access_token);
-          //     var noteName = reply[i].substring(1); //req.body.note_name;
-          //     client.get(noteName, function(status, reply, meta) {
-          //       //res.send(reply.toString());
 
-          //       revision(reply.toString(), noteName);
-          //     });
-          //   }
-          // };
+
+
+
+          //Need to run each reply through comments
+          for (var i = reply.length - 1; i >= 0; i--) {
+            if (reply[i].substring(1) != undefined)
+            {
+              var app = createApp(req.session);
+              var client = app.client(req.session.access_token);
+              var noteName = reply[i].substring(1); //req.body.note_name;
+              client.get(noteName, function(status, reply, meta) {
+                revision(reply.toString(), noteName);
+              });
+            }
+          };
 
           // res.send(reply.toString());
         });
@@ -357,13 +362,13 @@ function entities(output, contents, title) {
 // A test for the revision function
 //revision("This is a really bad test about Newton and cookies and milk and the moon.");
 
-function addDoc(title, output)
+function addDoc(title, output_1)
 {
-  console.log("Adding");
-  console.log(title);
-  console.log(output);
+  //console.log("Adding");
+  //console.log(title);
+  console.log(output_1);
   var newDoc = new Doc({ 
-      output: output,
+      output: output_1,
       title: title
     });
     newDoc.save(function(error, data) {

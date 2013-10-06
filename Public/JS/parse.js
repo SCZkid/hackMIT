@@ -1,6 +1,7 @@
 var base_url = "http://localhost:9001";
 
 $(document).ready(function() {
+	refreshFiles();
 	var dbox = dbox_utility();
 	$("#btn_parse").click(function() {
 		createNotecards($("#markdown_input").val());
@@ -126,6 +127,7 @@ function displayNotecards(questions, answers)
 
 function refreshFiles()
 {
+
 	$.ajax({
 		type: "GET",
 		url: base_url+"/dropbox/list",
@@ -136,6 +138,7 @@ function refreshFiles()
 			for (var i = response.length - 1; i >= 0; i--) {
 				var newLink = "<a href='#' class='list-group-item'>"+response[i].substring(1)+"</a>";
 				$("#list_notes").append(newLink);
+				$("#btn_dropbox").hide();
 			};
 
 			$("#list_notes a").click(function(ev) {
