@@ -17,8 +17,37 @@ function example(req, res) {
 }
 
 function concepts(req, res, output) {
-  alchemyapi.concepts('text', demo_text, { 'showSourceText':1 }, function(error, response) {
+  alchemyapi.concepts('text', demo_text, { 'showSourceText':0 }, function(error, response) {
     output['concepts'] = { text:demo_text, response:JSON.stringify(response,null,4), results:response['concepts'] };
+    keywords(req, res, output);
+  });
+}
+
+function keywords(req, res, output) {
+  alchemyapi.keywords('text', demo_text, {}, function(error, response) {
+    output['keywords'] = { text:demo_text, response:JSON.stringify(response,null,4), results:response['keywords'] };
+    category(req, res, output);
+  });
+}
+
+function category(req, res, output) {
+  alchemyapi.category('text', demo_text, {}, function(error, response) {
+    output['relations'] = { text:demo_text, response:JSON.stringify(response,null,4), results:response };
+    relations(req, res, output);
+  });
+}
+
+function relations(req, res, output) {
+  alchemyapi.relations('text', demo_text, {}, function(error, response) {
+    output['relations'] = {text:demo_text, response:JSON.stringify(response,null,4), results:response['relations'] };
+    entities(req, res, output);
+  });
+}
+
+function entities(req, res, output) {
+  alchemyapi.entities('text', demo_text, { 'quotations':1 }, function(error, response) {
+    output['entities'] = { text:demo_text, response:JSON.stringify(response,null,4), results:response['entities'] };
     res.send(output);
   });
 }
+
