@@ -22,6 +22,18 @@ $(document).ready(function() {
 		});
 	});
 
+	$("#submit_search").click(function() {
+		$.ajax({
+			type: "POST", 
+			data: {keywords: $("#search_keyword").val(), concepts: $("#search_concept").val()},
+			url: base_url+"/search",
+			success: function(response)
+			{
+
+			}
+		});
+	})
+
 	$("#btn_dropbox_confirm").click(function() {
 		$.ajax({
 			type: "POST",
