@@ -1,14 +1,15 @@
 {
-	"name":            "NoteParse",
-	"description":     "Note parsing service",
-	"private":         "true", 
+	"name":               "NoteParse",
+	"description":        "Note parsing service",
+	"private":            "true", 
 	"dependencies": {
-	    "dbox":        "0.6.1",
-	    "express":     "3.x",
-	    "mongodb":     "*",
-	    "mongoose":    "*",
-	    "jade":        "*",
-	    "passport":    "*",
-        "request":     "~2.27.0"
+	    "dbox":           "0.6.1",
+	    "express":        "3.x",
+	    "mongodb":        "*",
+	    "mongoose":       "*",
+	    "jade":           "*",
+	    "passport":       "*",
+	    "passport-local": "*",
+        "request":        "~2.27.0"
 	} 
 }

@@ -4,6 +4,10 @@ var url = require('url');
 
 // Express
 var express = require('express');
+var passport = require('passport')
+  , LocalStrategy = require('passport-local').Strategy;
+
+//--------------------------------------------------------------------------------------------
 var app = express();
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -16,19 +20,21 @@ db.once('open', function callback () {
     	password: String,
     	documents: {}
     })
-    var User = mongoose.model('User', UserSchema);
+    app.User = User = mongoose.model('User', UserSchema);
     var jordan = new User({
-    	username: "jhaines",
-    	password: "kalosalrulez",
+    	username: "stevenz",
+    	password: "derpderp",
     	documents: {}
     });
-    jordan.save(function(error, data) {
+    /*jordan.save(function(error, data) {
         if(error) {
         	console.log(error);
         } else {
         	console.log(data);
         }
-    });
+    }); */
+    User.remove();
+    console.log(User);
     User.find(function(err, people) {
     	if(err) {
     		console.log(error);
@@ -36,12 +42,42 @@ db.once('open', function callback () {
     		console.log(people);
     	}
     })
+    
 });
 
 app.set('port', process.env.PORT || 3001);
 app.use(express.favicon());
 app.use(express.bodyParser());
+app.use(passport.initialize());
+app.use(passport.session());
 //app.use(express.methodOverride());
+
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+    	console.log(user);
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!(password === user.password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
 
 //Check port
 var port = process.env.PORT || 3001;
@@ -77,14 +113,20 @@ function start(route) {
 
 		console.log("Request for " + pathname + " received.");
         route(pathname);
-        response.sendfile('Public/MarkdownParse.html')
+        response.sendfile('Public/MarkdownParse.html');
 		//response.end();
 	});
 
 	app.get('/login', function(request, response) {
-        var pathname = url.parse(request.url).pathname;
-	    console.log(pathname);
-	});
+		response.sendfile('Public/testPage.html');
+		console.log("!!!!!!");
+	})
+
+    app.post('/login',
+        passport.authenticate('local', { successRedirect: '/loginsuccess',
+                                   failureRedirect: '/loginfail',
+                                   failureFlash: false })
+    );
 
 	app.listen(9001);
 	console.log('Server has started.');

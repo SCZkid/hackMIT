@@ -9,10 +9,10 @@
 
     <body>
         <h1> NoteParser </h1>
-        <form id="userLogin">
-        Username: <input id="username" type="textfield">
-        Password: <input id="password" type="password">
-        <input id="loginSubmit" type="submit" value="Login">
+        <form id="userLogin" action="/login" method="post">
+        Username: <input id="username" type="textfield" name="username">
+        Password: <input id="password" type="password" name="password">
+        <button id="loginSubmit"> Login </button>
         </form>
         
         <div id="noteContainer">
